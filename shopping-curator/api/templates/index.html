@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AI Shopping Curator</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 min-h-screen font-sans flex flex-col">
+
+  <!-- Page Header -->
+  <header class="bg-white shadow py-6">
+    <div class="max-w-6xl mx-auto px-6">
+      <h1 class="text-3xl font-bold text-indigo-700 text-center">🛒 AI-Powered Shopping List Curator</h1>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-grow">
+    <div class="max-w-6xl mx-auto mt-10 px-6">
+      <form method="POST" action="/process/" class="flex flex-col sm:flex-row gap-4 items-start sm:items-center bg-white p-6 rounded-xl shadow">
+        {% csrf_token %}
+
+        <input name="items"
+               placeholder="Enter your items (e.g., milk, shampoo, rice)"
+               class="flex-grow border border-gray-300 rounded-lg px-4 py-2 w-full sm:w-auto focus:outline-none focus:ring-2 focus:ring-indigo-400"
+        />
+
+        <div class="flex gap-2 mt-2 sm:mt-0">
+          <button type="button"
+                  onclick="alert('Voice input coming soon')"
+                  class="bg-green-500 text-white px-3 py-2 rounded hover:bg-green-600"
+          >🎤</button>
+
+          <button type="button"
+                  onclick="alert('Image OCR input coming soon')"
+                  class="bg-blue-500 text-white px-3 py-2 rounded hover:bg-blue-600"
+          >🖼️</button>
+
+          <button type="submit"
+                  class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700"
+          ><strong>Submit</strong></button>
+        </div>
+      </form>
+
+      {% if recommendations %}
+        <div class="mt-8 bg-white p-6 rounded-xl shadow">
+          <h2 class="text-xl font-semibold text-gray-800 mb-4">Top Recommendations</h2>
+          <ul class="space-y-4">
+            {% for item in recommendations %}
+              <li class="border border-gray-300 p-4 rounded-lg bg-gray-50">
+                <p class="font-bold text-indigo-600">{{ item.name }}</p>
+                <ul class="list-disc list-inside text-sm text-gray-700 mt-2">
+                  {% for rec in item.recommendations %}
+                    <li>{{ rec.name }} – ₹{{ rec.price }} ({{ rec.brand }})</li>
+                  {% endfor %}
+                </ul>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+    </div>
+  </main>
+
+</body>
+</html>
+
+<script>
+  document.querySelectorAll('button[onclick^="alert"]').forEach(btn => {
+    btn.addEventListener('click', () => alert('This feature is coming soon!'));
+  });
+</script>
