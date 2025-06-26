@@ -2,8 +2,9 @@ from pymongo import MongoClient  # type: ignore
 from sentence_transformers import SentenceTransformer
 import numpy as np
 import os
+import json
 from dotenv import load_dotenv  # type: ignore
-from django.shortcuts import render
+from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
 # Load environment variables
@@ -25,11 +26,17 @@ def cosine_similarity(vec1, vec2):
 @csrf_exempt
 def index(request):
     if request.method == "POST":
-        items_text = request.POST.get("items", "")
-        if not items_text:
-            return render(request, "index.html", {"recommendations": []})
+        try:
+            # Parse JSON body
+            data = json.loads(request.body.decode("utf-8"))
+            items_text = data.get("items", "")
+        except Exception as e:
+            return JsonResponse({"error": "Invalid JSON body"}, status=400)
 
-        raw_items = [item.strip() for item in items_text.split(",")]
+        if not items_text:
+            return JsonResponse({"items": []}, status=200)
+
+        raw_items = [item.strip() for item in items_text.split(",") if item.strip()]
 
         # Get product list with embeddings from MongoDB
         all_products = list(products_collection.find({}, {
@@ -51,7 +58,7 @@ def index(request):
                     score = cosine_similarity(query_embedding, product["embedding"])
                     scored.append((score, product))
 
-            # Top 5 matches by vector similarity
+            # Top 5 matches
             top_matches = sorted(scored, key=lambda x: x[0], reverse=True)[:5]
             recommendations = [match[1] for match in top_matches]
 
@@ -60,6 +67,7 @@ def index(request):
                 "recommendations": recommendations
             })
 
-        return render(request, "index.html", {"recommendations": response})
+        return JsonResponse({"items": response}, status=200)
 
-    return render(request, "index.html")
+    # Optional fallback for GET
+    return JsonResponse({"message": "Send a POST request with shopping items."}, status=200)
