@@ -1,11 +1,13 @@
-from pymongo import MongoClient  # type: ignore
+from pymongo import MongoClient 
 from sentence_transformers import SentenceTransformer
+from langchain_google_genai import ChatGoogleGenerativeAI
 import numpy as np
 import os
 import json
 from dotenv import load_dotenv  # type: ignore
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from .chain import get_chain
 
 # Load environment variables
 load_dotenv()
@@ -16,6 +18,13 @@ db = client["shopping"]
 products_collection = db["products"]
 
 model = SentenceTransformer("all-MiniLM-L6-v2")
+
+llm = ChatGoogleGenerativeAI(
+        model="gemini-2.0-flash-001",
+        google_api_key=os.getenv("GOOGLE_API_KEY")
+    )
+rag_chain = get_chain(llm=llm)
+
 
 # Cosine similarity function
 def cosine_similarity(vec1, vec2):
@@ -35,8 +44,9 @@ def index(request):
 
         if not items_text:
             return JsonResponse({"items": []}, status=200)
-
-        raw_items = [item.strip() for item in items_text.split(",") if item.strip()]
+        response = rag_chain.invoke({"input": items_text})
+        print(response)
+        raw_items = [item.strip() for item in response.split(",") if item.strip()]
 
         # Get product list with embeddings from MongoDB
         all_products = list(products_collection.find({}, {
