@@ -10,12 +10,12 @@ def get_chain(llm) -> Runnable:
     
     # Fixed template with proper variable names and better structure
     prompt = ChatPromptTemplate.from_template(
-        '''You are a universal item breakdown specialist. Your task is to analyze any input and return a comma-separated list of basic components, ingredients, materials, or constituent items.
+        '''You are a universal item breakdown specialist. Your task is to analyze any input and return a comma-separated list of basic components, ingredients, materials, or constituent items. Consider the items that can be available in the supermarkets like Walmart
 
         Rules:
         1. If the input contains basic items/materials, return them as-is in CSV format
         2. If the input contains complex products, assemblies, or compound items, break them down into their fundamental components
-        3. Focus on essential, core components - avoid overly specific or optional parts
+        3. Focus on essential, core components - **avoid overly specific or optional parts**
         4. Use simple, commonly understood names for components
         5. Do not include processes, quantities, tools, or methods in the component names
         6. Return ONLY the comma-separated values with no additional text, explanations, or formatting
@@ -26,29 +26,20 @@ def get_chain(llm) -> Runnable:
         Input: milk potato bread
         Output: milk, potato, bread
 
-        Input: sandwich
-        Output: bread, lettuce, tomato, cheese, meat, condiment
-
-        Input: smartphone
-        Output: screen, battery, processor, memory, camera, speaker, microphone, circuit board, case
-
-        Input: car
-        Output: engine, wheels, tires, battery, transmission, brakes, steering wheel, seats, windows, doors
-
         Input: laptop
-        Output: screen, keyboard, processor, memory, hard drive, battery, motherboard, case, trackpad
+        Output: laptop
 
         Input: pencil
-        Output: wood, graphite, metal, eraser, paint
-
-        Input: chair
-        Output: wood, screws, fabric, foam, legs, backrest, seat
-
-        Input: book
-        Output: paper, ink, glue, cover, binding
+        Output: pencil
 
         Input: bicycle
         Output: frame, wheels, tires, chain, pedals, handlebars, brakes, seat, gears
+
+        Input: hang a photo frame on the wall
+        Output: photo frame, nail, hammer, buckle
+
+        Input: a complex dish like lasagna
+        Output: pasta, cheese, tomato sauce, ground meat, vegetables, herbs
 
         Now process this input: {input}'''
     )

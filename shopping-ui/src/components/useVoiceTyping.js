@@ -6,18 +6,17 @@ const useVoiceTyping = (onTextUpdate) => {
   const recognitionRef = useRef(null);
   const finalTranscriptRef = useRef("");
   const interimTranscriptRef = useRef("");
+  const manuallyStoppedRef = useRef(false);
 
   useEffect(() => {
-    if (
-      !("webkitSpeechRecognition" in window || "SpeechRecognition" in window)
-    ) {
+    if (!("webkitSpeechRecognition" in window || "SpeechRecognition" in window)) {
       setError("Speech recognition is not supported in this browser.");
       return;
     }
 
-    const SpeechRecognition =
-      window.SpeechRecognition || window.webkitSpeechRecognition;
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     const recognition = new SpeechRecognition();
+
     recognition.continuous = true;
     recognition.interimResults = true;
     recognition.lang = "en-US";
@@ -28,9 +27,8 @@ const useVoiceTyping = (onTextUpdate) => {
     };
 
     recognition.onresult = (event) => {
-      // Handle the results from speech recognition
-      let finalTranscript = ""; // This will hold the final recognized text
-      let interimTranscript = ""; // This will hold the interim recognized text(not finalize yet)
+      let finalTranscript = "";
+      let interimTranscript = "";
 
       for (let i = event.resultIndex; i < event.results.length; i++) {
         const transcript = event.results[i][0].transcript;
@@ -41,26 +39,29 @@ const useVoiceTyping = (onTextUpdate) => {
         }
       }
 
-      finalTranscriptRef.current += finalTranscript; // Stores all confirmed speech
-      interimTranscriptRef.current = interimTranscript; // Holds current in-progress speech
+      finalTranscriptRef.current += finalTranscript;
+      interimTranscriptRef.current = interimTranscript;
 
-      onTextUpdate(finalTranscriptRef.current + interimTranscriptRef.current); // Updates UI with combined live + final speech
-    };
-
-    recognition.onspeechend = () => {
-      recognition.stop();
+      if (!manuallyStoppedRef.current) {
+        onTextUpdate(finalTranscriptRef.current + interimTranscriptRef.current);
+      }
     };
 
     recognition.onend = () => {
-      if (isListening) {
-        setIsListening(false); // Only set to false if we were listening
+      if (manuallyStoppedRef.current) {
+        manuallyStoppedRef.current = false;
+        setIsListening(false);
+        return;
       }
 
-      if (finalTranscriptRef.curent) {
+      if (finalTranscriptRef.current && !manuallyStoppedRef.current) {
         onTextUpdate(finalTranscriptRef.current.trim());
         finalTranscriptRef.current = "";
         interimTranscriptRef.current = "";
       }
+
+      // Auto-restart if speech ends naturally
+      recognition.start();
     };
 
     recognition.onerror = (event) => {
@@ -85,7 +86,7 @@ const useVoiceTyping = (onTextUpdate) => {
       setIsListening(false);
     };
 
-    recognitionRef.current = recognition; // Store the recognition instance for later use
+    recognitionRef.current = recognition;
 
     return () => {
       if (recognitionRef.current) {
@@ -103,6 +104,7 @@ const useVoiceTyping = (onTextUpdate) => {
     try {
       finalTranscriptRef.current = "";
       interimTranscriptRef.current = "";
+      manuallyStoppedRef.current = false;
       recognitionRef.current.start();
     } catch (error) {
       setError("Failed to start speech recognition: " + error.message);
@@ -111,12 +113,9 @@ const useVoiceTyping = (onTextUpdate) => {
 
   const stopListening = () => {
     if (recognitionRef.current) {
-      try {
-        recognitionRef.current.stop();
-        setIsListening(false);
-      } catch (error) {
-        setIsListening(false);
-      }
+      manuallyStoppedRef.current = true;
+      recognitionRef.current.stop();
+      setIsListening(false);
     }
   };
 
