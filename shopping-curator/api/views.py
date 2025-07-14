@@ -4,10 +4,11 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 import numpy as np
 import os
 import json
-from dotenv import load_dotenv  # type: ignore
+from dotenv import load_dotenv
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .chain import get_chain
+from mistral_ocr_inference import run_mistral_ocr
 
 # Load environment variables
 load_dotenv()
@@ -20,13 +21,11 @@ products_collection = db["products"]
 model = SentenceTransformer("all-MiniLM-L6-v2")
 
 llm = ChatGoogleGenerativeAI(
-        model="gemini-2.0-flash-001",
-        google_api_key=os.getenv("GOOGLE_API_KEY")
-    )
+    model="gemini-2.0-flash-001",
+    google_api_key=os.getenv("GOOGLE_API_KEY")
+)
 rag_chain = get_chain(llm=llm)
 
-
-# Cosine similarity function
 def cosine_similarity(vec1, vec2):
     v1 = np.array(vec1)
     v2 = np.array(vec2)
@@ -35,20 +34,39 @@ def cosine_similarity(vec1, vec2):
 @csrf_exempt
 def index(request):
     if request.method == "POST":
-        try:
-            # Parse JSON body
-            data = json.loads(request.body.decode("utf-8"))
-            items_text = data.get("items", "")
-        except Exception as e:
-            return JsonResponse({"error": "Invalid JSON body"}, status=400)
+        items_text = ""
 
-        if not items_text:
+        if request.content_type.startswith("multipart/form-data"):
+            # Get text input
+            items_text = request.POST.get("items", "")
+            image_file = request.FILES.get("image")
+
+            if image_file:
+                try:
+                    # Use Mistral OCR instead of Tesseract
+                    mistral_api_key = os.getenv("MISTRAL_API_KEY")
+                    extracted_text = run_mistral_ocr(image_file, mistral_api_key)
+                    items_text += ", " + extracted_text
+                except Exception as e:
+                    return JsonResponse({"error": str(e)}, status=400)
+
+        else:  # Handle JSON request
+            try:
+                data = json.loads(request.body.decode("utf-8"))
+                items_text = data.get("items", "")
+            except Exception:
+                return JsonResponse({"error": "Invalid JSON body"}, status=400)
+
+        if not items_text.strip():
             return JsonResponse({"items": []}, status=200)
+
+        # Use Gemini to extract structured item list
         response = rag_chain.invoke({"input": items_text})
-        print(response)
+        print("RAG Response:", response)
+
         raw_items = [item.strip() for item in response.split(",") if item.strip()]
 
-        # Get product list with embeddings from MongoDB
+        # Get all products from DB
         all_products = list(products_collection.find({}, {
             "_id": 0,
             "embedding": 1,
@@ -79,5 +97,4 @@ def index(request):
 
         return JsonResponse({"items": response}, status=200)
 
-    # Optional fallback for GET
-    return JsonResponse({"message": "Send a POST request with shopping items."}, status=200)
+    return JsonResponse({"message": "Send a POST request with shopping items or image."}, status=200)
