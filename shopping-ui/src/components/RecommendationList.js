@@ -24,6 +24,11 @@ function RecommendationList({ recommendations }) {
     };
   });
 
+  const handleAddToCart = (item) => {
+    // You can replace this with your cart logic
+    alert(`🛒 Added "${item.name}" to cart!`);
+  };
+
   return (
     <div className="mt-10">
       <div className="flex flex-wrap items-center justify-between mb-6 gap-4">
@@ -66,15 +71,11 @@ function RecommendationList({ recommendations }) {
                 }`}
               >
                 <div>
-                  <h4 className="text-md font-semibold text-gray-900">
-                    {item.name}
-                  </h4>
+                  <h4 className="text-md font-semibold text-gray-900">{item.name}</h4>
                   {item.brand && (
                     <p className="text-sm text-gray-500">{item.brand}</p>
                   )}
-                  <p className="text-[#000000] font-bold mt-1">
-                    {item.price}
-                  </p>
+                  <p className="text-[#000000] font-bold mt-1">{item.price}</p>
                   <div className="text-yellow-500 text-sm mt-1">
                     {renderStars(item.rating || Math.floor(Math.random() * 2) + 4)}
                     <span className="ml-2 text-gray-400 text-xs">
@@ -91,6 +92,14 @@ function RecommendationList({ recommendations }) {
                       View on Walmart
                     </a>
                   )}
+
+                  {/* ✅ Add to Cart Button */}
+                  <button
+                    onClick={() => handleAddToCart(item)}
+                    className="mt-3 bg-[#FFC220] hover:bg-[#e5b400] text-black font-semibold text-sm px-4 py-2 rounded shadow w-full transition"
+                  >
+                    🛒 Add to Cart
+                  </button>
                 </div>
               </div>
             ))}
