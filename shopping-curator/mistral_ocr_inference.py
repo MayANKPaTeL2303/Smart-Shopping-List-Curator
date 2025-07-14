@@ -1,5 +1,6 @@
 import base64
 from mistralai import Mistral
+import os
 
 
 def encode_image_to_base64(image_path):
@@ -46,7 +47,7 @@ def run_mistral_ocr(file_obj, api_key):
 if __name__ == "__main__":
     # Local image testing
     image_path = "./grocery_sample00.png"
-    api_key = "JpnYtAsqsdFzqUc16c5CSByhch2rW7yQ"  # Ideally use os.getenv("MISTRAL_API_KEY")
+    api_key = os.getenv("MISTRAL_API_KEY") 
 
     base64_image = encode_image_to_base64(image_path)
 
