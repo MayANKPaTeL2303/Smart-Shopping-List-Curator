@@ -1,24 +1,16 @@
-// src/components/UploadImageButton.jsx
-import React from "react";
-
-const UploadImageButton = ({ setUploadedImage }) => {
-  // const handleUpload = (e) => {
-  //   const file = e.target.files[0];
-  //   if (file) setUploadedImage(file);
-  // };
+function UploadImageButton({ setUploadedImage }) {
+  const handleImageChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      setUploadedImage(e.target.files[0]);
+    }
+  };
 
   return (
-    <label className="cursor-pointer bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded transition-colors duration-200 flex items-center gap-2">
-      🖼️ Upload Image
-      <input
-        type="file"
-        accept="image/*"
-        // onChange={handleUpload}
-        className="hidden"
-      />
+    <label className="cursor-pointer bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded inline-block">
+      📷 Upload Image
+      <input type="file" accept="image/*" onChange={handleImageChange} hidden />
     </label>
-
   );
-};
+}
 
 export default UploadImageButton;

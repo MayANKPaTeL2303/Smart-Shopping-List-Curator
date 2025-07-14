@@ -12,3 +12,5 @@ env/
 ENV/
 .venv/
 .env
+
+point.txt

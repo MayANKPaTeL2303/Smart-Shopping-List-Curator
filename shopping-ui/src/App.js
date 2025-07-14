@@ -26,9 +26,18 @@ function App() {
     e.preventDefault();
     setLoading(true);
     setErrorMsg("");
+
     try {
-      const res = await axios.post("http://127.0.0.1:8000/process/", {
-        items: inputText,
+      const formData = new FormData();
+      formData.append("items", inputText);
+      if (uploadedImage) {
+        formData.append("image", uploadedImage);
+      }
+
+      const res = await axios.post("http://127.0.0.1:8000/process/", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       });
 
       if (res.data && Array.isArray(res.data.items)) {
@@ -36,7 +45,9 @@ function App() {
           ...item,
           recommendations: item.recommendations.map((rec) => ({
             ...rec,
-            image: `https://source.unsplash.com/80x80/?${rec.name.split(" ").join(",")}`,
+            image: `https://source.unsplash.com/80x80/?${rec.name
+              .split(" ")
+              .join(",")}`,
           })),
         }));
         setRecommendations(withImages);
@@ -45,6 +56,7 @@ function App() {
         setErrorMsg("Invalid response from server.");
       }
     } catch (error) {
+      console.error(error);
       setErrorMsg("Failed to fetch recommendations. Please try again.");
       setRecommendations([]);
     } finally {
@@ -59,7 +71,10 @@ function App() {
           🛒 AI-Powered Shopping List Curator
         </h1>
 
-        <label htmlFor="itemsInput" className="block font-medium text-gray-700 mb-1">
+        <label
+          htmlFor="itemsInput"
+          className="block font-medium text-gray-700 mb-1"
+        >
           Enter items or use voice:
         </label>
         <textarea
@@ -89,10 +104,12 @@ function App() {
             type="button"
             onClick={toggleListening}
             className={`px-4 py-2 rounded transition-all duration-300 flex items-center gap-2 text-white ${
-              isListening ? 'bg-red-500 hover:bg-red-600 animate-pulse' : 'bg-green-500 hover:bg-green-600'
+              isListening
+                ? "bg-red-500 hover:bg-red-600 animate-pulse"
+                : "bg-green-500 hover:bg-green-600"
             }`}
           >
-            {isListening ? '🛑 Stop Listening' : '🎤 Start Speaking'}
+            {isListening ? "🛑 Stop Listening" : "🎤 Start Speaking"}
           </button>
 
           <UploadImageButton setUploadedImage={setUploadedImage} />
@@ -100,7 +117,7 @@ function App() {
           <button
             type="submit"
             onClick={handleSubmit}
-            disabled={loading || !inputText.trim()}
+            disabled={loading || (!inputText.trim() && !uploadedImage)}
             className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded disabled:bg-gray-400 disabled:cursor-not-allowed"
           >
             {loading ? "🔄 Loading..." : "🚀 Submit"}
@@ -108,12 +125,19 @@ function App() {
         </div>
 
         {uploadedImage && (
-          <div className="mt-2">
+          <div className="mt-4 relative inline-block">
             <img
               src={URL.createObjectURL(uploadedImage)}
               alt="Uploaded Preview"
-              className="max-w-xs rounded shadow"
+              className="max-w-xs rounded shadow-lg mb-4"
             />
+            <button
+              onClick={() => setUploadedImage(null)}
+              className="absolute top-0 right-0 bg-white-500 text-white rounded-full px-2 py-1 text-xs hover:bg-black-600 shadow-md"
+              title="Remove image"
+            >
+              ❌
+            </button>
           </div>
         )}
 
