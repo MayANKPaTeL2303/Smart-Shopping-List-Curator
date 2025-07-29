@@ -1,12 +1,44 @@
-# Auto-detect text files and normalize to LF
+# Set default behavior to automatically normalize line endings
 * text=auto
 
-# Force LF for all JS, CSS, HTML files
-*.js text eol=lf
-*.jsx text eol=lf
-*.css text eol=lf
-*.html text eol=lf
-*.json text eol=lf
-*.md text eol=lf
-*.ts text eol=lf
-*.tsx text eol=lf
+# Explicitly declare text files
+*.js    text
+*.jsx   text
+*.ts    text
+*.tsx   text
+*.html  text
+*.css   text
+*.scss  text
+*.md    text
+*.yml   text
+*.yaml  text
+*.json  text
+*.xml   text
+*.py    text
+*.sh    text
+*.txt   text
+
+# Declare binary files
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.ico   binary
+*.pdf   binary
+*.woff  binary
+*.woff2 binary
+*.ttf   binary
+*.eot   binary
+*.mp4   binary
+*.mp3   binary
+
+# Prevent Git from changing line endings in shell scripts and similar files
+*.sh    text eol=lf
+*.py    text eol=lf
+
+# Ignore .env files from being normalized (optional, if needed)
+.env*   text
+
+# Exclude package-lock and yarn lock from line ending changes
+package-lock.json -text
+yarn.lock         -text

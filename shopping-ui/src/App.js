@@ -59,18 +59,17 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6 font-sans">
-      <div className="max-w-5xl mx-auto bg-white p-6 rounded-xl shadow-md">
-        {/* Walmart Branding Header */}
-        <div className="flex items-center justify-center gap-4 mb-6">
-          <img
-            src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Walmart_logo.svg/2560px-Walmart_logo.svg.png"
-            alt="Walmart Logo"
-            className="h-10"
-          />
-          <h1 className="text-3xl font-bold text-[#0071CE] text-center">
-            AI-Powered Shopping List Curator
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 p-6 font-sans">
+      <div className="max-w-5xl mx-auto bg-white/80 backdrop-blur-sm p-8 rounded-2xl shadow-xl border border-white/20">
+        {/* Modern Header */}
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl mb-4 shadow-lg">
+            <span className="text-2xl text-white">🛒</span>
+          </div>
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+            Smart Shopping Assistant
           </h1>
+          <p className="text-gray-600 mt-2">AI-powered shopping list curator with intelligent recommendations</p>
         </div>
 
         {/* Text Input */}
@@ -86,8 +85,8 @@ function App() {
           rows="4"
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
-          placeholder="e.g. milk, rice, shampoo"
-          className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0071CE] mb-4"
+          placeholder="e.g. milk, rice, shampoo, or describe what you need..."
+          className="w-full p-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent mb-4 bg-white/50 backdrop-blur-sm transition-all duration-200 placeholder-gray-400"
         />
 
         {/* Voice Listening Status */}
@@ -110,10 +109,10 @@ function App() {
           <button
             type="button"
             onClick={toggleListening}
-            className={`px-4 py-2 rounded text-white font-semibold flex items-center gap-2 transition-all ${
+            className={`px-6 py-3 rounded-xl text-white font-semibold flex items-center gap-2 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 ${
               isListening
-                ? "bg-red-500 hover:bg-red-600 animate-pulse"
-                : "bg-[#0071CE] hover:bg-blue-800"
+                ? "bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 animate-pulse"
+                : "bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700"
             }`}
           >
             {isListening ? "🛑 Stop Listening" : "🎤 Start Speaking"}
@@ -125,9 +124,9 @@ function App() {
             type="submit"
             onClick={handleSubmit}
             disabled={loading || (!inputText.trim() && !uploadedImage)}
-            className="bg-[#FFC220] hover:bg-yellow-400 text-black font-semibold px-6 py-2 rounded disabled:bg-gray-300 disabled:cursor-not-allowed"
+            className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-semibold px-8 py-3 rounded-xl disabled:bg-gray-300 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:transform-none disabled:hover:shadow-lg"
           >
-            {loading ? "🔄 Loading..." : "🚀 Submit"}
+            {loading ? "🔄 Processing..." : "✨ Get Recommendations"}
           </button>
         </div>
 
