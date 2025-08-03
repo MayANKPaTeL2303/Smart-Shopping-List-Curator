@@ -215,10 +215,6 @@ Processes shopping list input and returns recommendations.
 4. Add tests if applicable
 5. Submit a pull request
 
-## 📄 License
-
-MIT License - feel free to use and modify as needed.
-
 ## 🙏 Acknowledgments
 
 - **Google** for Gemini AI API
