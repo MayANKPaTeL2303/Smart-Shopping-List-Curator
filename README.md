@@ -9,7 +9,7 @@ A sophisticated shopping list curator that uses cutting-edge AI to understand yo
 - **🎤 Voice Input**: Speak your shopping list naturally
 - **📸 Image Recognition**: Upload photos of handwritten lists or receipts
 - **🤖 AI-Powered Processing**: Google Gemini AI breaks down complex requests
-- **🔍 Smart Recommendations**: Semantic search for the best product matches
+- **🔍 Smart Recommendations**: Vector search for the best product matches
 - **📱 Modern UI**: Responsive React interface with Tailwind CSS
 - **⚡ Real-time Processing**: Fast OCR and recommendation engine
 
