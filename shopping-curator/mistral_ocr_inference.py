@@ -2,14 +2,21 @@ import base64
 from mistralai import Mistral
 import os
 
+"""
+     Why base64 is used in OCR API calls? 
+Most OCR/vision APIs (including Mistral, OpenAI Vision, etc.) accept images as base64 strings instead of raw binary because:
+
+JSON can’t store raw binary safely.
+
+Base64 turns bytes into ASCII text (letters, numbers, +/=) that can be embedded in a JSON body.
+
+"""
 
 def encode_image_to_base64(image_path):
-    """
-    Encode a local image file to base64.
-    """
     try:
         with open(image_path, "rb") as image_file:
-            return base64.b64encode(image_file.read()).decode("utf-8")
+            input = image_file.read()
+            return base64.b64encode(input).decode("utf-8")
     except FileNotFoundError:
         print(f"Error: File not found - {image_path}")
         return None
@@ -34,7 +41,7 @@ def run_mistral_ocr(file_obj, api_key):
                 "type": "image_url",
                 "image_url": f"data:image/jpeg;base64,{base64_image}"
             },
-            include_image_base64=False
+            include_image_base64=False # Do not return the image in response
         )
 
         return "\n".join([page.markdown.strip() for page in ocr_response.pages])

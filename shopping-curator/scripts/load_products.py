@@ -12,8 +12,6 @@ client = MongoClient(os.getenv("MONGO_URI"))
 db = client["shopping"]
 collection = db["products"]
 
-
-
 # Dummy data
 products = [
     {'name': 'Ziploc Extra Bag 4 ct', 'brand': 'Ziploc', 'price': '$11.13', 'category': 'Household'},
@@ -72,7 +70,7 @@ products = [
 # Insert into MongoDB
 for product in products:
     description = f"{product['name']} {product['brand']} {product['category']}"
-    embedding = model.encode(description).tolist()  # Convert to list for JSON
+    embedding = model.encode(description).tolist()
     product["embedding"] = embedding
     collection.insert_one(product)
 

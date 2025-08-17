@@ -1,2 +1,13 @@
 Add the feature - Recipe Mode (Input a recipe name → Return curated ingredient list with best product matches and quantities.)
 
+
+
+
+
+
+Sample Input: 
+
+- high-protein vegetarian items
+- items needed for a birthday cake
+- detergent, dishwashing liquid, mop
+- suggest healthy breakfast options

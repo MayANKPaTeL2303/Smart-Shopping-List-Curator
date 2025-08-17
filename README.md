@@ -1,19 +1,19 @@
-# 🛒 Shopping List Curator
+# Shopping List Curator
 
 **An AI-Powered Multimodal Shopping Assistant**
 
 A sophisticated shopping list curator that uses cutting-edge AI to understand your shopping needs through text, voice, or images, and provides intelligent product recommendations.
 
-## 🌟 Features
+## Features
 
-- **🎤 Voice Input**: Speak your shopping list naturally
-- **📸 Image Recognition**: Upload photos of handwritten lists or receipts
-- **🤖 AI-Powered Processing**: Google Gemini AI breaks down complex requests
-- **🔍 Smart Recommendations**: Semantic search for the best product matches
-- **📱 Modern UI**: Responsive React interface with Tailwind CSS
-- **⚡ Real-time Processing**: Fast OCR and recommendation engine
+- **Voice Input**: Speak your shopping list naturally
+- **Image Recognition**: Upload photos of handwritten lists or receipts
+- **AI-Powered Processing**: Google Gemini AI breaks down complex requests
+- **Smart Recommendations**: Semantic search for the best product matches
+- **Modern UI**: Responsive React interface with Tailwind CSS
+- **Real-time Processing**: Fast OCR and recommendation engine
 
-## 🏗️ Architecture
+## Architecture
 
 ### Backend (`shopping-curator/`)
 - **Framework**: Django REST API
@@ -25,11 +25,11 @@ A sophisticated shopping list curator that uses cutting-edge AI to understand yo
 - **Search**: Cosine similarity matching for product recommendations
 
 ### Frontend (`shopping-ui/`)
-- **Framework**: React 19 with modern hooks
+- **Framework**: React with modern hooks
 - **Styling**: Tailwind CSS for responsive design
 - **Features**: Voice recognition, image upload, real-time updates
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 
@@ -96,7 +96,7 @@ A sophisticated shopping list curator that uses cutting-edge AI to understand yo
 4. **Access the application**
    Open [http://localhost:3000](http://localhost:3000)
 
-## 📋 Usage
+## Usage
 
 ### Text Input
 1. Type your shopping items in the text area
@@ -113,7 +113,7 @@ A sophisticated shopping list curator that uses cutting-edge AI to understand yo
 2. Select a photo of your handwritten list or receipt
 3. OCR will extract text and process items
 
-## 🔧 API Endpoints
+## API Endpoints
 
 ### `POST /process/`
 Processes shopping list input and returns recommendations.
@@ -141,7 +141,7 @@ Processes shopping list input and returns recommendations.
 }
 ```
 
-## 🧠 AI Pipeline
+## AI Pipeline
 
 1. **Input Processing**: Text, voice, or image input collection
 2. **OCR Extraction**: Mistral OCR converts images to text
@@ -150,7 +150,7 @@ Processes shopping list input and returns recommendations.
 5. **Similarity Search**: Cosine similarity matching against product database
 6. **Recommendation Ranking**: Top 5 products returned per item
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 ├── shopping-curator/          # Django Backend
@@ -187,14 +187,14 @@ Processes shopping list input and returns recommendations.
 - **Axios** - HTTP client
 - **Web Speech API** - Voice recognition
 
-## 🔒 Security & Best Practices
+## Security & Best Practices
 
 - Environment variables for API keys
 - CORS configuration for secure cross-origin requests
 - Input validation and error handling
 - Secure file upload handling
 
-## 🚀 Deployment
+## Deployment
 
 ### Backend Deployment
 - Configure production database
@@ -207,15 +207,7 @@ Processes shopping list input and returns recommendations.
 - Deploy to static hosting (Netlify, Vercel)
 - Configure API endpoint URLs
 
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
-
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - **Google** for Gemini AI API
 - **Mistral AI** for OCR capabilities

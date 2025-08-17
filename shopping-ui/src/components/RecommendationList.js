@@ -5,11 +5,13 @@ const getNumericPrice = (priceString) => {
   return isNaN(num) ? Infinity : num;
 };
 
-function RecommendationList({ recommendations }) {
+function RecommendationList({ recommendations, mode = "shopping" }) {
   const [sortBy, setSortBy] = useState("asc");
   const [viewMode, setViewMode] = useState("grid");
 
-  if (!recommendations || recommendations.length === 0) return null;
+  if (!recommendations || recommendations.length === 0) {
+    return null;
+  }
 
   const sortedRecommendations = recommendations.map((group) => {
     const sortedItems = [...group.items].sort((a, b) => {
@@ -34,9 +36,14 @@ function RecommendationList({ recommendations }) {
       <div className="flex flex-wrap items-center justify-between mb-8 gap-4">
         <div>
           <h2 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-            ✨ Smart Recommendations
+            {mode === "recipe" ? "🥘 Recipe Ingredients" : "✨ Smart Recommendations"}
           </h2>
-          <p className="text-gray-600 mt-1">Curated products based on your shopping list</p>
+          <p className="text-gray-600 mt-1">
+            {mode === "recipe" 
+              ? "Curated ingredients with quantities for your recipe"
+              : "Curated products based on your shopping list"
+            }
+          </p>
         </div>
 
         <div className="flex items-center gap-4">
@@ -70,21 +77,38 @@ function RecommendationList({ recommendations }) {
             </h3>
           </div>
 
-          <div className="flex overflow-x-auto space-x-6 pb-4 scrollbar-thin scrollbar-thumb-gray-300 scroll-smooth">
+          <div className={`${
+            viewMode === "grid" 
+              ? "flex overflow-x-auto space-x-6 pb-4 scrollbar-thin scrollbar-thumb-gray-300 scroll-smooth"
+              : "grid gap-4 md:grid-cols-2 lg:grid-cols-3"
+          }`}>
             {group.items.map((item, itemIdx) => (
               <div
                 key={itemIdx}
-                className={`min-w-[240px] bg-white/80 backdrop-blur-sm border-2 border-gray-100 rounded-2xl shadow-lg p-6 flex-shrink-0 hover:shadow-xl hover:scale-105 transition-all duration-300 hover:border-indigo-200 ${
-                  viewMode === "grid" ? "w-[240px]" : "w-full"
+                className={`bg-white/80 backdrop-blur-sm border-2 border-gray-100 rounded-2xl shadow-lg p-6 hover:shadow-xl hover:scale-105 transition-all duration-300 hover:border-indigo-200 ${
+                  viewMode === "grid" ? "min-w-[240px] w-[240px] flex-shrink-0" : "w-full"
                 }`}
               >
                 <div className="flex flex-col h-full">
                   <div className="flex-grow">
+                    {mode === "recipe" && (item.quantity || item.unit) && (
+                      <div className="bg-gradient-to-r from-orange-100 to-amber-100 text-orange-800 px-3 py-1 rounded-full text-sm font-semibold mb-3 inline-block">
+                        {item.quantity && item.unit ? `${item.quantity} ${item.unit}` : 
+                         item.quantity ? `${item.quantity}` : 
+                         item.unit ? item.unit : ''}
+                      </div>
+                    )}
+                    
                     <h4 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2">{item.name}</h4>
+                    
                     {item.brand && (
                       <p className="text-sm text-indigo-600 font-medium mb-2">{item.brand}</p>
                     )}
-                    <p className="text-2xl font-bold text-emerald-600 mb-3">{item.price}</p>
+                    
+                    {item.price && (
+                      <p className="text-2xl font-bold text-emerald-600 mb-3">{item.price}</p>
+                    )}
+                    
                     <div className="flex items-center gap-2 mb-3">
                       <div className="text-yellow-400 text-sm">
                         {renderStars(item.rating || Math.floor(Math.random() * 2) + 4)}
@@ -93,27 +117,14 @@ function RecommendationList({ recommendations }) {
                         ({Math.floor(Math.random() * 90) + 10})
                       </span>
                     </div>
-                    {item.link && (
-                      <a
-                        href={item.link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 text-sm text-indigo-600 hover:text-indigo-800 font-medium transition-colors duration-200"
-                      >
-                        <span>View Details</span>
-                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                        </svg>
-                      </a>
-                    )}
+                    
                   </div>
 
-                  {/* Add to Cart Button */}
                   <button
                     onClick={() => handleAddToCart(item)}
                     className="mt-4 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-semibold text-sm px-4 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 w-full"
                   >
-                    🛒 Add to Cart
+                    {mode === "recipe" ? "🛒 Add Ingredient" : "🛒 Add to Cart"}
                   </button>
                 </div>
               </div>
@@ -121,6 +132,23 @@ function RecommendationList({ recommendations }) {
           </div>
         </div>
       ))}
+
+      {mode === "recipe" && (
+        <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl p-4 mt-6">
+          <div className="flex items-start gap-3">
+            <span className="text-2xl">💡</span>
+            <div>
+              <h4 className="font-semibold text-green-800 mb-2">Shopping Tips for Recipe Mode</h4>
+              <ul className="text-green-700 text-sm space-y-1">
+                <li>• Check your pantry for items you might already have</li>
+                <li>• Consider buying in bulk for frequently used ingredients</li>
+                <li>• Look for store brands to save money on basic ingredients</li>
+                <li>• Fresh ingredients like herbs can often be substituted with dried versions</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
