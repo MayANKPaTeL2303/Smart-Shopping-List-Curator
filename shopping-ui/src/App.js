@@ -53,21 +53,22 @@ function App() {
       );
 
       if (response.data && response.data.ingredients) {
-        // If it's a string like "pasta|1/2|pound, olive oil|2|tablespoons..."
         const rawIngredients = response.data.ingredients;
 
-        // If backend already sends array, return directly
         if (Array.isArray(rawIngredients)) {
           return rawIngredients;
         }
 
         // Otherwise parse the string
+        console.warn("Backend returned string instead of array for ingredients");
         return rawIngredients.split(",").map((item) => {
           const parts = item.trim().split("|");
           return {
             name: parts[0] || "",
             quantity: parts[1] || "",
             unit: parts[2] || "",
+            display: parts[0] || "",
+            category: "Other Ingredients"
           };
         });
       }
@@ -116,14 +117,17 @@ function App() {
         const withImages = res.data.items.map((item) => ({
           category: item.name,
           items: item.recommendations.map((rec) => ({
-            name: rec.name,
-            price: rec.price,
-            link: rec.link,
+            name: rec.name || 'Unknown Item',
+            price: rec.price || 'Price not available',
+            link: rec.link || '#',
+            brand: rec.brand || '',
+            category: rec.category || '',
             quantity: rec.quantity || null, // For recipe mode
             unit: rec.unit || null, // For recipe mode
           })),
         }));
         setRecommendations(withImages);
+        setErrorMsg("")
       } else {
         setErrorMsg("Invalid response from server.");
         setRecommendations([]);
@@ -138,8 +142,6 @@ function App() {
   };
 
   const currentInput = mode === "recipe" ? recipeInput : inputText;
-  // const setCurrentInput = mode === "recipe" ? setRecipeInput : setInputText;
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 p-6 font-sans">
       <div className="max-w-6xl mx-auto bg-white/80 backdrop-blur-sm p-8 rounded-2xl shadow-xl border border-white/20">
@@ -325,37 +327,36 @@ function App() {
               Ingredients for {servings} serving{servings !== 1 ? "s" : ""}:
             </p>
 
-            {/* Ingredients List */}
-            {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {recipeIngredients.map((ingredient, index) => (
-                <div
-                  key={index}
-                  className="bg-white/70 backdrop-blur-md border border-orange-200 rounded-xl p-4 shadow-sm hover:shadow-md transition duration-200"
-                >
-                  <h4 className="font-semibold text-gray-800 text-sm">
-                    {ingredient.display || ingredient.name}
-                  </h4>
-                  {(ingredient.quantity || ingredient.unit) && (
-                    <p className="text-orange-600 text-xs font-medium mt-1">
-                      {ingredient.quantity} {ingredient.unit}
-                    </p>
-                  )}
-                  {ingredient.category && (
-                    <span className="inline-block mt-2 text-[10px] px-2 py-1 rounded-full bg-orange-100 text-gray-600">
-                      {ingredient.category}
-                    </span>
-                  )}
-                </div>
-              ))}
-            </div> */}
-
-            {/* Total Count */}
-            {/* <div className="mt-4 pt-3 border-t border-orange-200">
-              <p className="text-orange-700 font-semibold text-sm">
-                Total: {recipeIngredients.length} ingredient
-                {recipeIngredients.length !== 1 ? "s" : ""}
-              </p>
-            </div> */}
+            {/* Simple List Format */}
+            <div className="bg-white/70 rounded-md p-2 border border-orange-200">
+              <ul className="">
+                {recipeIngredients.map((ingredient, index) => (
+                  <li
+                    key={`${ingredient.name}-${index}`}
+                    className="flex items-center justify-between py-2 px-3 bg-white/50 rounded-lg hover:bg-white/80 transition-colors duration-150"
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="w-6 h-6 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center text-xs font-semibold">
+                        {index + 1}
+                      </span>
+                      <span className="font-medium text-gray-800">
+                        {ingredient.display || ingredient.name}
+                      </span>
+                    </div>
+                    {(ingredient.quantity && ingredient.unit) && (
+                      <span className="text-orange-600 font-semibold text-sm bg-orange-100 px-2 py-1 rounded-full">
+                        {ingredient.quantity} {ingredient.unit}
+                      </span>
+                    )}
+                  </li>
+                ))}
+              </ul>
+              <div className="mt-4 pt-3 border-t border-orange-200">
+                <p className="text-orange-700 font-semibold text-sm text-center">
+                  Total: {recipeIngredients.length} ingredient{recipeIngredients.length !== 1 ? "s" : ""}
+                </p>
+              </div>
+            </div>
           </div>
         )}
 

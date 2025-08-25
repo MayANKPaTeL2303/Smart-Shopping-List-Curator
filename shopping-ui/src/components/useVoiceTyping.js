@@ -60,7 +60,6 @@ const useVoiceTyping = (onTextUpdate) => {
         interimTranscriptRef.current = "";
       }
 
-      // Auto-restart if speech ends naturally
       recognition.start();
     };
 

@@ -7,9 +7,8 @@ import json
 from dotenv import load_dotenv
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from .chain import get_chain, get_chain_recipe, get_chain_recipe_advanced
+from .chain import get_chain, get_chain_recipe
 from mistral_ocr_inference import run_mistral_ocr
-import re
 
 load_dotenv()
 
@@ -24,9 +23,8 @@ llm = ChatGoogleGenerativeAI(
     model="gemini-2.0-flash-001",
     google_api_key=os.getenv("GOOGLE_API_KEY")
 )
-rag_chain = get_chain(llm=llm)
+chain = get_chain(llm=llm)
 recipe_chain = get_chain_recipe(llm=llm)
-recipe_advanced_chain = get_chain_recipe_advanced(llm=llm)
 
 # To find the similarity 
 def cosine_similarity(vec1, vec2):
@@ -50,7 +48,7 @@ def parse_recipe_ingredients(recipe_response):
                 "name": name,
                 "quantity": quantity,
                 "unit": unit,
-                "search_term": name # Use name for the product search
+                "search_term": name 
             })
         else:
             ingredients.append({
@@ -77,8 +75,8 @@ def get_product_recommendations(search_term, all_products, top_k=5):
 
 def process_shopping_mode(items_text, all_products):
     """Process shopping list items and return recommendations."""
-    response = rag_chain.invoke({"input": items_text})
-    print("RAG Response:", response)
+    response = chain.invoke({"input": items_text})
+    print("Response:", response)
 
     raw_items = [item.strip() for item in response.split(",") if item.strip()]
     
@@ -95,17 +93,14 @@ def process_shopping_mode(items_text, all_products):
 def process_recipe_mode(recipe_name, servings, all_products):
     """Process recipe and return ingredients with recommendations."""
     try:
-        # Get recipe ingredients
         recipe_response = recipe_chain.invoke({
             "recipe_name": recipe_name,
             "servings": servings
         })
         print(f"Recipe Response: {recipe_response}")
 
-        # Parse ingredients
         ingredients = parse_recipe_ingredients(recipe_response)
         
-        # Group ingredients by category for better organization
         categories = {}
         
         for ingredient in ingredients:
@@ -124,7 +119,7 @@ def process_recipe_mode(recipe_name, servings, all_products):
                     enhanced_rec["unit"] = ingredient["unit"]
                 enhanced_recommendations.append(enhanced_rec)
             
-            # Categorize ingredient (simple categorization)
+            # Categorize ingredient
             category = categorize_ingredient(ingredient["name"])
             
             if category not in categories:
@@ -137,7 +132,6 @@ def process_recipe_mode(recipe_name, servings, all_products):
                 "recommendations": enhanced_recommendations
             })
         
-        # Convert categories to list format expected by frontend
         result = []
         for category_name, items in categories.items():
             category_recommendations = []
@@ -157,7 +151,7 @@ def process_recipe_mode(recipe_name, servings, all_products):
                 "recommendations": category_recommendations
             })
         
-        return result, None
+        return result
 
     except Exception as e:
         print(f"Error processing recipe: {e}")
@@ -202,17 +196,17 @@ def get_recipe_ingredients(request):
             data = json.loads(request.body.decode("utf-8"))
             recipe_name = data.get("recipe_name", "")
             servings = int(data.get("servings", 4))
-            
+            if servings <= 0:
+                servings = 1
+
             if not recipe_name.strip():
                 return JsonResponse({"error": "Recipe name is required"}, status=400)
             
-            # Get ingredients from recipe chain
             recipe_response = recipe_chain.invoke({
                 "recipe_name": recipe_name,
                 "servings": servings
             })
             
-            # Parse ingredients
             ingredients = parse_recipe_ingredients(recipe_response)
             
             formatted_ingredients = []
@@ -253,7 +247,7 @@ def index(request):
         recipe_name = ""
         servings = 4
         
-        # Handle multipart form data (from frontend with possible image upload)
+        # Handle multipart form data(like image, text)
         if request.content_type and request.content_type.startswith("multipart/form-data"):
             mode = request.POST.get("mode", "shopping")
             
@@ -274,7 +268,6 @@ def index(request):
                 except Exception as e:
                     return JsonResponse({"error": f"OCR processing failed: {str(e)}"}, status=400)
         
-        # Handle JSON data
         else:
             try:
                 data = json.loads(request.body.decode("utf-8"))
@@ -294,8 +287,7 @@ def index(request):
         else:
             if not items_text.strip():
                 return JsonResponse({"items": []}, status=200)
-
-        # Get all products from database
+            
         try:
             all_products = list(products_collection.find({}, {
                 "_id": 0,
@@ -313,10 +305,9 @@ def index(request):
         except Exception as e:
             return JsonResponse({"error": f"Database error: {str(e)}"}, status=500)
 
-        # Process based on mode
         try:
             if mode == "recipe":
-                response_items, recipe_instructions = process_recipe_mode(recipe_name, servings, all_products)
+                response_items = process_recipe_mode(recipe_name, servings, all_products)
                 return JsonResponse({
                     "items": response_items,
                     "mode": "recipe",
@@ -325,9 +316,6 @@ def index(request):
                         "servings": servings
                     }
                 }, status=200)
-                # Add detailed recipe instructions if available
-                if recipe_instructions:
-                    response_data["recipe_details"] = recipe_instructions
             else:
                 response_items = process_shopping_mode(items_text, all_products)
                 return JsonResponse({
@@ -350,7 +338,6 @@ def index(request):
 def health_check(request):
     """Health check endpoint."""
     try:
-        # Test database connection
         db.command("ping")
         return JsonResponse({
             "status": "healthy",

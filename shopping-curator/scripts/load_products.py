@@ -1,8 +1,8 @@
-from pymongo import MongoClient # type: ignore
-from dotenv import load_dotenv # type: ignore
+from pymongo import MongoClient
+from dotenv import load_dotenv 
 import os
 import numpy as np
-from sentence_transformers import SentenceTransformer # type: ignore
+from sentence_transformers import SentenceTransformer 
 
 model = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
 
@@ -65,6 +65,55 @@ products = [
     {'name': 'Jimmy Dean Sausage Patties 8 ct', 'brand': 'Jimmy Dean', 'price': '$5.29', 'category': 'Frozen Breakfast'},
     {'name': 'Oscar Mayer Bacon 16 oz', 'brand': 'Oscar Mayer', 'price': '$6.98', 'category': 'Meat'},
 ]
+
+products.extend([
+    # 🎂 Ready-Made Birthday Cakes
+    {'name': 'Bakery Fresh Chocolate Birthday Cake 8 inch', 'brand': 'Bakery Fresh', 'price': '$12.99', 'category': 'Bakery'},
+    {'name': 'Bakery Fresh Vanilla Birthday Cake 8 inch', 'brand': 'Bakery Fresh', 'price': '$11.99', 'category': 'Bakery'},
+    {'name': 'Bakery Fresh Red Velvet Cake 8 inch', 'brand': 'Bakery Fresh', 'price': '$14.49', 'category': 'Bakery'},
+    {'name': 'Bakery Fresh Birthday Cupcake Pack 12 ct', 'brand': 'Bakery Fresh', 'price': '$7.99', 'category': 'Bakery'},
+
+    # 🎉 Party Supplies
+    {'name': 'Party City Colorful Paper Plates 20 ct', 'brand': 'Party City', 'price': '$3.49', 'category': 'Party Supplies'},
+    {'name': 'Party City Birthday Balloons Pack 10 ct', 'brand': 'Party City', 'price': '$4.99', 'category': 'Party Supplies'},
+    {'name': 'Amscan Plastic Table Cover 108x54 inch', 'brand': 'Amscan', 'price': '$2.97', 'category': 'Party Supplies'},
+    {'name': 'Wilton Happy Birthday Cake Topper', 'brand': 'Wilton', 'price': '$5.29', 'category': 'Party Supplies'},
+
+    # ☕ Coffee & Tea
+    {'name': 'Dunkin’ Original Blend Ground Coffee 12 oz', 'brand': 'Dunkin’', 'price': '$6.99', 'category': 'Coffee'},
+    {'name': 'Twinings English Breakfast Tea 20 ct', 'brand': 'Twinings', 'price': '$3.79', 'category': 'Tea'},
+
+    # 🍫 Confectionery & Snacks
+    {'name': 'KitKat Chocolate Wafer Bar 1.5 oz', 'brand': 'KitKat', 'price': '$1.25', 'category': 'Confectionery'},
+    {'name': 'Snickers Chocolate Bar 1.86 oz', 'brand': 'Snickers', 'price': '$1.19', 'category': 'Confectionery'},
+    {'name': 'Pringles Original Chips 5.5 oz', 'brand': 'Pringles', 'price': '$2.49', 'category': 'Snacks'},
+    {'name': 'Doritos Nacho Cheese Chips 9.75 oz', 'brand': 'Doritos', 'price': '$3.99', 'category': 'Snacks'},
+
+    # 🌰 Nuts & Dried Fruits
+    {'name': 'Wonderful Pistachios Roasted Salted 16 oz', 'brand': 'Wonderful', 'price': '$8.99', 'category': 'Nuts'},
+    {'name': 'Sun-Maid Raisins 20 oz', 'brand': 'Sun-Maid', 'price': '$4.29', 'category': 'Dried Fruits'},
+
+    # 🥫 Sauces & Spices
+    {'name': 'Tabasco Original Hot Sauce 5 oz', 'brand': 'Tabasco', 'price': '$3.45', 'category': 'Sauces'},
+    {'name': 'Sriracha Hot Chili Sauce 17 oz', 'brand': 'Huy Fong', 'price': '$4.15', 'category': 'Sauces'},
+    {'name': 'McCormick Black Pepper 3 oz', 'brand': 'McCormick', 'price': '$2.89', 'category': 'Spices'},
+    {'name': 'McCormick Ground Cinnamon 2.37 oz', 'brand': 'McCormick', 'price': '$3.15', 'category': 'Spices'},
+
+    # 🥛 Dairy Alternatives
+    {'name': 'Silk Almond Milk Original 64 oz', 'brand': 'Silk', 'price': '$3.49', 'category': 'Dairy Alternatives'},
+    {'name': 'Oatly Oat Milk 64 oz', 'brand': 'Oatly', 'price': '$4.29', 'category': 'Dairy Alternatives'},
+
+    # 👶 Baby Products
+    {'name': 'Gerber Rice Cereal 8 oz', 'brand': 'Gerber', 'price': '$2.89', 'category': 'Baby Food'},
+    {'name': 'Pampers Baby Dry Diapers Size 3 32 ct', 'brand': 'Pampers', 'price': '$8.97', 'category': 'Baby Care'},
+    {'name': 'Huggies Natural Care Baby Wipes 56 ct', 'brand': 'Huggies', 'price': '$2.49', 'category': 'Baby Care'},
+
+    # 🐟 Seafood & Meat
+    {'name': 'Chicken Breast Boneless Skinless 1 lb', 'brand': 'Fresh Meat', 'price': '$4.99', 'category': 'Meat'},
+    {'name': 'Salmon Fillet Fresh 1 lb', 'brand': 'Fresh Seafood', 'price': '$8.99', 'category': 'Seafood'},
+    {'name': 'Shrimp Large Raw 2 lb Bag', 'brand': 'Fresh Seafood', 'price': '$12.49', 'category': 'Seafood'},
+])
+
 
 
 # Insert into MongoDB

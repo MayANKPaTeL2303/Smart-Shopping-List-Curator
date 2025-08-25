@@ -1,9 +1,4 @@
-Add the feature - Recipe Mode (Input a recipe name → Return curated ingredient list with best product matches and quantities.)
-
-
-
-
-
+Add the option to the list to generate input better using AI 
 
 Sample Input: 
 
